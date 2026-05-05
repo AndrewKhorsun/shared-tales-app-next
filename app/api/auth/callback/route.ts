@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 const API_URL = process.env.API_URL || "http://localhost:3000";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3001";
 const DEFAULT_LOCALE = "en";
 
 export async function GET(request: NextRequest) {
@@ -36,5 +37,5 @@ export async function GET(request: NextRequest) {
 
   const nextParam = request.nextUrl.searchParams.get("next") ?? "/books";
   const next = nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/books";
-  return NextResponse.redirect(`${origin}/${locale}${next}`);
+  return NextResponse.redirect(`${SITE_URL}/${locale}${next}`);
 }
