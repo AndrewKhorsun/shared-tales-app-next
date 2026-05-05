@@ -2,14 +2,37 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 const API_URL = process.env.API_URL || "http://localhost:3000";
+const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY!;
+if (!TURNSTILE_SECRET_KEY) throw new Error("Missing TURNSTILE_SECRET_KEY");
 
 export async function POST(request: Request) {
-  const { email, password, first_name, last_name } = await request.json();
+  const { email, password, first_name, last_name, turnstile_token } =
+    await request.json();
 
   if (!email || !password || !first_name || !last_name) {
     return NextResponse.json(
       { error: "All fields are required" },
-      { status: 400 }
+      { status: 400 },
+    );
+  }
+
+  const response = await fetch(
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    {
+      method: "POST",
+      body: new URLSearchParams({
+        secret: TURNSTILE_SECRET_KEY,
+        response: turnstile_token,
+      }),
+    },
+  );
+
+  const data = await response.json();
+
+  if (!data.success) {
+    return NextResponse.json(
+      { error: "Captcha verification failed" },
+      { status: 400 },
     );
   }
 
@@ -24,7 +47,7 @@ export async function POST(request: Request) {
   if (!registerRes.ok) {
     return NextResponse.json(
       { error: registerData.error || "Registration failed" },
-      { status: registerRes.status }
+      { status: registerRes.status },
     );
   }
 
@@ -39,7 +62,7 @@ export async function POST(request: Request) {
   if (!loginRes.ok) {
     return NextResponse.json(
       { error: loginData.error || "Auto-login failed" },
-      { status: loginRes.status }
+      { status: loginRes.status },
     );
   }
 
