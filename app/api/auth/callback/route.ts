@@ -7,19 +7,23 @@ const DEFAULT_LOCALE = "en";
 export async function GET(request: NextRequest) {
   const { origin } = request.nextUrl;
   const locale = request.cookies.get("NEXT_LOCALE")?.value ?? DEFAULT_LOCALE;
-  const token = request.nextUrl.searchParams.get("token");
+  const code = request.nextUrl.searchParams.get("code");
 
-  if (!token) {
+  if (!code) {
     return NextResponse.redirect(`${origin}/${locale}/login`);
   }
 
-  const verifyRes = await fetch(`${API_URL}/api/auth/me`, {
-    headers: { Authorization: `Bearer ${token}` },
+  const exchangeRes = await fetch(`${API_URL}/api/auth/exchange-code`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code }),
   });
 
-  if (!verifyRes.ok) {
+  if (!exchangeRes.ok) {
     return NextResponse.redirect(`${origin}/${locale}/login`);
   }
+
+  const { token } = await exchangeRes.json();
 
   const cookieStore = await cookies();
   cookieStore.set("token", token, {
