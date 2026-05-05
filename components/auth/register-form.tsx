@@ -7,6 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { OAuthButtons } from "./oauth-buttons";
 import { api } from "@/lib/api";
 import type { AuthResponse } from "@/types";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 export function RegisterForm() {
   const t = useTranslations("RegisterForm");
@@ -20,6 +21,7 @@ export function RegisterForm() {
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string>("");
 
   function checkStrength(value: string) {
     let score = 0;
@@ -37,6 +39,11 @@ export function RegisterForm() {
     e.preventDefault();
     setError("");
 
+    if (!turnstileToken) {
+      setError(t("captchaRequired"));
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError(t("passwordsDoNotMatch"));
       return;
@@ -46,7 +53,13 @@ export function RegisterForm() {
 
     const { error: apiError } = await api.post<AuthResponse>(
       "/api/auth/register",
-      { email, password, first_name: firstName, last_name: lastName }
+      {
+        email,
+        password,
+        first_name: firstName,
+        last_name: lastName,
+        turnstile_token: turnstileToken,
+      },
     );
 
     setLoading(false);
@@ -161,16 +174,31 @@ export function RegisterForm() {
         <span className="w-4 h-4 bg-input border border-border-mid rounded flex items-center justify-center shrink-0 peer-checked:border-border-active peer-checked:bg-amber/15" />
         <span>
           {t("termsPrefix")}{" "}
-          <a href="#" className="text-amber-dim hover:text-amber transition-colors">
+          <a
+            href="#"
+            className="text-amber-dim hover:text-amber transition-colors"
+          >
             {t("termsLink")}
           </a>{" "}
           {t("termsAnd")}{" "}
-          <a href="#" className="text-amber-dim hover:text-amber transition-colors">
+          <a
+            href="#"
+            className="text-amber-dim hover:text-amber transition-colors"
+          >
             {t("privacyLink")}
           </a>
         </span>
       </label>
+      <div className="mt-6">
 
+      <Turnstile
+        siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ""}
+        onSuccess={(token) => setTurnstileToken(token)}
+        onError={() => setError(t("captchaError"))}
+        onExpire={() => setTurnstileToken("")}
+        options={{ theme: "dark" }}
+      />
+      </div>
       <button
         type="submit"
         disabled={loading}

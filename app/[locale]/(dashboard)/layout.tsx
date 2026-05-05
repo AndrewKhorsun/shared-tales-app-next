@@ -10,10 +10,14 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
   const { data, error } = await serverApi.get<{ user: User }>("/api/auth/me");
   if (error || !data) {
-    const locale = await getLocale();
     redirect(`/${locale}/login`);
+  }
+
+  if (!data.user.email_verified) {
+    redirect(`/${locale}/verify-email`);
   }
 
   return (
