@@ -30,5 +30,7 @@ export async function GET(request: NextRequest) {
     maxAge: 60 * 60 * 24,
   });
 
-  return NextResponse.redirect(`${origin}/${locale}/dashboard`);
+  const nextParam = request.nextUrl.searchParams.get("next") ?? "/books";
+  const next = nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/books";
+  return NextResponse.redirect(`${origin}/${locale}${next}`);
 }
