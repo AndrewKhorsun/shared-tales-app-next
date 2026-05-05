@@ -2,10 +2,11 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 const API_URL = process.env.API_URL || "http://localhost:3000";
-const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY!;
-if (!TURNSTILE_SECRET_KEY) throw new Error("Missing TURNSTILE_SECRET_KEY");
 
 export async function POST(request: Request) {
+  const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
+  if (!TURNSTILE_SECRET_KEY) throw new Error("Missing TURNSTILE_SECRET_KEY");
+
   const { email, password, first_name, last_name, turnstile_token } =
     await request.json();
 
