@@ -226,6 +226,13 @@
     "lastName": "Last name",
     "email": "Email"
   },
+  "BookCover": {
+    "upload": "Upload cover",
+    "change": "Change",
+    "delete": "Delete",
+    "error_size": "File must be under 5 MB",
+    "error_type": "Only JPEG, PNG, or WebP images are allowed"
+  },
   "CharacterModal": {
     "name": "Name",
     "role": "Role",

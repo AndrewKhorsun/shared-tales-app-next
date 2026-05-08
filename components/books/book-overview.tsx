@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Book, BookPlan } from "@/types";
 import { Chapter } from "@/types/chapters";
 import { StatusPill } from "./status-pill";
+import { BookCover } from "./BookCover";
 
 interface BookOverviewProps {
   book: Book;
@@ -37,6 +39,7 @@ function formatDate(dateString: string): string {
 export function BookOverview({ book, chapters, plan }: BookOverviewProps) {
   const router = useRouter();
   const locale = useLocale();
+  const [coverUrl, setCoverUrl] = useState<string | null>(book.cover_image_url ?? null);
   const totalChapters = chapters.length;
   const publishedChapters = chapters.filter(
     (ch) => ch.status === "published"
@@ -100,39 +103,43 @@ export function BookOverview({ book, chapters, plan }: BookOverviewProps) {
           </div>
 
           {/* Right column - cover card */}
-          <div className="bg-elevated rounded-xl border border-border-soft p-6 relative overflow-hidden">
-            <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-amber" />
-            <div className="absolute inset-0 bg-gradient-to-br from-amber/5 to-transparent" />
+          <div className="bg-elevated rounded-xl border border-border-soft relative overflow-hidden" style={{ minHeight: 260 }}>
+            <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-amber z-10" />
 
-            <div className="relative z-10">
-              <p className="font-mono text-[9px] text-fog uppercase mb-4">
-                A Novel · in progress
-              </p>
-
-              <h2 className="font-serif text-[22px] text-parchment mb-1">
-                {book.title}
-              </h2>
-
-              <p className="text-[13px] text-fog italic mb-4">
-                {book.author_name}
-              </p>
-
-              {/* Progress bar */}
-              {totalChapters > 0 && (
-                <>
-                  <div className="w-full bg-surface rounded-full h-1 mb-3 overflow-hidden">
-                    <div
-                      className="bg-amber h-1 rounded-full transition-all"
-                      style={{ width: `${progressPercent}%` }}
-                    />
+            {coverUrl ? (
+              <div className="w-full h-full" style={{ minHeight: 260 }}>
+                <BookCover bookId={book.id} coverUrl={coverUrl} onUpdate={setCoverUrl} />
+              </div>
+            ) : (
+              <>
+                <div className="absolute inset-0 bg-gradient-to-br from-amber/5 to-transparent" />
+                <div className="relative z-10 p-6 flex flex-col h-full">
+                  <p className="font-mono text-[9px] text-fog uppercase mb-4">
+                    A Novel · in progress
+                  </p>
+                  <h2 className="font-serif text-[22px] text-parchment mb-1">
+                    {book.title}
+                  </h2>
+                  <p className="text-[13px] text-fog italic mb-4">
+                    {book.author_name}
+                  </p>
+                  {totalChapters > 0 && (
+                    <div className="w-full bg-surface rounded-full h-1 mb-3 overflow-hidden">
+                      <div
+                        className="bg-amber h-1 rounded-full transition-all"
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
+                  )}
+                  <p className="font-mono text-[11px] text-fog mb-6">
+                    {publishedChapters}/{totalChapters} CHAPTERS
+                  </p>
+                  <div className="flex-1 flex items-end">
+                    <BookCover bookId={book.id} coverUrl={null} onUpdate={setCoverUrl} />
                   </div>
-                </>
-              )}
-
-              <p className="font-mono text-[11px] text-fog">
-                {publishedChapters}/{totalChapters} CHAPTERS
-              </p>
-            </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
 

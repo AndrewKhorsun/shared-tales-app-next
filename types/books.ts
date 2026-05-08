@@ -16,6 +16,7 @@ export interface Book {
   published_chapters?: number;
   total_word_count?: number;
   has_generating_chapter?: boolean;
+  cover_image_url?: string | null;
 }
 
 export interface BooksResponse {
