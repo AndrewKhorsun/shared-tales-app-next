@@ -18,9 +18,7 @@ interface BookOverviewProps {
 
 function wordCount(content: string): number {
   return content
-    ? content
-        .split(/\s+/)
-        .filter((word) => word.length > 0).length
+    ? content.split(/\s+/).filter((word) => word.length > 0).length
     : 0;
 }
 
@@ -40,7 +38,9 @@ function formatDate(dateString: string): string {
 export function BookOverview({ book, chapters, plan }: BookOverviewProps) {
   const router = useRouter();
   const locale = useLocale();
-  const [coverUrl, setCoverUrl] = useState<string | null>(book.cover_image_url ?? null);
+  const [coverUrl, setCoverUrl] = useState<string | null>(
+    book.cover_image_url ?? null,
+  );
   const [exporting, setExporting] = useState(false);
 
   async function handleExport(format: "docx" | "pdf" | "epub") {
@@ -63,9 +63,10 @@ export function BookOverview({ book, chapters, plan }: BookOverviewProps) {
   }
   const totalChapters = chapters.length;
   const publishedChapters = chapters.filter(
-    (ch) => ch.status === "published"
+    (ch) => ch.status === "published",
   ).length;
-  const progressPercent = totalChapters > 0 ? (publishedChapters / totalChapters) * 100 : 0;
+  const progressPercent =
+    totalChapters > 0 ? (publishedChapters / totalChapters) * 100 : 0;
 
   const genre = plan?.genre || "Unknown Genre";
   const language = plan?.language || "en";
@@ -101,21 +102,26 @@ export function BookOverview({ book, chapters, plan }: BookOverviewProps) {
               by {book.author_name}
             </p>
 
-            {premise && (
-              <p className="text-[15px] text-fog/90 leading-relaxed mt-4 max-w-[480px] mb-6">
-                {premise}
-              </p>
-            )}
+            {
+              (book.description && (
+                <p className="text-[15px] text-fog/90 leading-relaxed mt-4 max-w-[480px] mb-6">
+                  {book.description}
+                </p>
+              ))}
 
             <div className="flex gap-3">
               <button
-                onClick={() => router.push(`/${locale}/books/${book.id}/chapters`)}
+                onClick={() =>
+                  router.push(`/${locale}/books/${book.id}/chapters`)
+                }
                 className="bg-amber text-canvas font-mono text-[11px] px-4 py-2 rounded hover:bg-amber/90 transition-colors"
               >
                 Continue writing →
               </button>
               <button
-                onClick={() => router.push(`/${locale}/books/${book.id}/book-plan`)}
+                onClick={() =>
+                  router.push(`/${locale}/books/${book.id}/book-plan`)
+                }
                 className="border border-border-soft text-parchment font-mono text-[11px] px-4 py-2 rounded hover:bg-surface/30 transition-colors"
               >
                 Edit book plan
@@ -124,19 +130,29 @@ export function BookOverview({ book, chapters, plan }: BookOverviewProps) {
                 trigger={exporting ? "Exporting..." : "Export"}
                 disabled={exporting}
                 items={[
-                  { label: "Export as docx", onClick: () => handleExport("docx") },
+                  {
+                    label: "Export as docx",
+                    onClick: () => handleExport("docx"),
+                  },
                 ]}
               />
             </div>
           </div>
 
           {/* Right column - cover card */}
-          <div className="bg-elevated rounded-xl border border-border-soft relative overflow-hidden" style={{ minHeight: 260 }}>
+          <div
+            className="bg-elevated rounded-xl border border-border-soft relative overflow-hidden"
+            style={{ minHeight: 260 }}
+          >
             <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-amber z-10" />
 
             {coverUrl ? (
               <div className="w-full h-full" style={{ minHeight: 260 }}>
-                <BookCover bookId={book.id} coverUrl={coverUrl} onUpdate={setCoverUrl} />
+                <BookCover
+                  bookId={book.id}
+                  coverUrl={coverUrl}
+                  onUpdate={setCoverUrl}
+                />
               </div>
             ) : (
               <>
@@ -163,7 +179,11 @@ export function BookOverview({ book, chapters, plan }: BookOverviewProps) {
                     {publishedChapters}/{totalChapters} CHAPTERS
                   </p>
                   <div className="flex-1 flex items-end">
-                    <BookCover bookId={book.id} coverUrl={null} onUpdate={setCoverUrl} />
+                    <BookCover
+                      bookId={book.id}
+                      coverUrl={null}
+                      onUpdate={setCoverUrl}
+                    />
                   </div>
                 </div>
               </>
@@ -199,14 +219,12 @@ export function BookOverview({ book, chapters, plan }: BookOverviewProps) {
                   key={chapter.id}
                   onClick={() =>
                     router.push(
-                      `/${locale}/books/${book.id}/chapters/${chapter.id}`
+                      `/${locale}/books/${book.id}/chapters/${chapter.id}`,
                     )
                   }
                   className="hover:bg-surface/50 cursor-pointer border-b border-border-soft last:border-b-0 transition-colors"
                 >
-                  <td className="px-4 py-3 text-[13px] text-fog">
-                    {idx + 1}
-                  </td>
+                  <td className="px-4 py-3 text-[13px] text-fog">{idx + 1}</td>
                   <td className="px-4 py-3 text-[13px] text-parchment">
                     {chapter.title}
                   </td>
@@ -256,9 +274,7 @@ export function BookOverview({ book, chapters, plan }: BookOverviewProps) {
                           {char.role}
                         </p>
                       </div>
-                      <p className="text-[13px] text-fog">
-                        {char.description}
-                      </p>
+                      <p className="text-[13px] text-fog">{char.description}</p>
                     </div>
                   </div>
                 ))}
