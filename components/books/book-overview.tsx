@@ -8,6 +8,7 @@ import { Book, BookPlan } from "@/types";
 import { Chapter } from "@/types/chapters";
 import { StatusPill } from "./status-pill";
 import { BookCover } from "./BookCover";
+import { DropdownMenu } from "@/components/ui/dropdown-menu";
 
 interface BookOverviewProps {
   book: Book;
@@ -40,6 +41,26 @@ export function BookOverview({ book, chapters, plan }: BookOverviewProps) {
   const router = useRouter();
   const locale = useLocale();
   const [coverUrl, setCoverUrl] = useState<string | null>(book.cover_image_url ?? null);
+  const [exporting, setExporting] = useState(false);
+
+  async function handleExport(format: "docx" | "pdf" | "epub") {
+    setExporting(true);
+    try {
+      const res = await fetch(`/api/books/${book.id}/export/${format}`);
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${book.title}.${format}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Export failed. Please try again.");
+    } finally {
+      setExporting(false);
+    }
+  }
   const totalChapters = chapters.length;
   const publishedChapters = chapters.filter(
     (ch) => ch.status === "published"
@@ -99,6 +120,13 @@ export function BookOverview({ book, chapters, plan }: BookOverviewProps) {
               >
                 Edit book plan
               </button>
+              <DropdownMenu
+                trigger={exporting ? "Exporting..." : "Export"}
+                disabled={exporting}
+                items={[
+                  { label: "Export as docx", onClick: () => handleExport("docx") },
+                ]}
+              />
             </div>
           </div>
 

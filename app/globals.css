@@ -129,6 +129,25 @@ body {
   --tw-prose-code: #C9A96E;
 }
 
+/* Custom scrollbar — thin, project-themed */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 169, 110, 0.2) transparent;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(201, 169, 110, 0.2);
+  border-radius: 9999px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(201, 169, 110, 0.4);
+}
+
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -154,6 +173,22 @@ body {
 .animate-caret { animation: caret-blink 1s step-end infinite; }
 .font-serif-body { font-family: var(--font-serif-body); }
 .font-serif { font-family: var(--font-serif); }
+
+/* MDXEditor source (markdown) mode — override CodeMirror white background */
+.cm-editor,
+.cm-editor .cm-scroller,
+.cm-editor .cm-content {
+  background: var(--color-canvas) !important;
+  color: var(--color-parchment) !important;
+}
+
+.cm-editor .cm-line {
+  color: var(--color-parchment);
+}
+
+.cm-editor .cm-cursor {
+  border-left-color: var(--color-parchment) !important;
+}
 
 /* MDXEditor: toolbar full width, content with side padding and scroll */
 [class*="_editorRoot_"] {
