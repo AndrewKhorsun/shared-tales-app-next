@@ -31,7 +31,7 @@ export default async function ChaptersPage({ params }: ChaptersPageProps) {
   return (
     <div className="flex overflow-hidden" style={{ height: "calc(100dvh - 52px)" }}>
       <ChapterSidebarNew book={book} chapters={[]} bookId={bookId} />
-      <main className="flex-1 overflow-y-auto flex items-center justify-center">
+      <main className="flex-1 overflow-y-auto scrollbar-thin flex items-center justify-center">
         <CreateFirstChapter bookId={bookId} />
       </main>
     </div>

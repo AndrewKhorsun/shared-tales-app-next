@@ -146,20 +146,10 @@ export function ChapterSidebarNew({
             +
           </button>
         </div>
-        <div className="flex flex-col gap-0.5 overflow-y-auto flex-1 pb-4">
+        <div className="flex flex-col gap-0.5 overflow-y-auto flex-1 pb-4 scrollbar-thin">
           {chapters.map((c) => (
             <ChapterRow key={c.id} chapter={c} bookId={bookId} />
           ))}
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div className="px-4.5 py-3 border-t border-border-soft flex items-center gap-2.5">
-        <div className="w-7 h-7 rounded-full bg-amber-dim text-parchment flex items-center justify-center font-serif text-[13px]">
-          {book.author_name?.[0] ?? "?"}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-[12px] text-parchment truncate">{book.author_name}</div>
         </div>
       </div>
 
