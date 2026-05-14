@@ -22,12 +22,13 @@ export function BookGrid({ books }: BookGridProps) {
   const [sort, setSort] = useState<SortType>("updated");
   const [viewMode, setViewMode] = useState<ViewType>("cards");
 
-  const hasChapters = books.some((b) => (b as any).chapters?.length);
-
   const filteredBooks = useMemo(() => {
     return books.filter((book) => {
       if (filter === "all") return true;
-      // For Phase 1, we don't have chapter data, so disable these filters
+      const total = Number(book.total_chapters ?? 0);
+      const published = Number(book.published_chapters ?? 0);
+      if (filter === "in-progress") return total > 0 && published < total;
+      if (filter === "complete") return published > 0 && published === total;
       return true;
     });
   }, [books, filter]);
@@ -59,26 +60,20 @@ export function BookGrid({ books }: BookGridProps) {
           </button>
           <button
             onClick={() => setFilter("in-progress")}
-            disabled={!hasChapters}
-            className={`text-[12px] px-3 py-1 rounded-md border transition-colors ${
-              !hasChapters
-                ? "border-border-soft text-fog/40 cursor-not-allowed"
-                : filter === "in-progress"
-                  ? "border-amber text-amber bg-amber/10 cursor-pointer"
-                  : "border-border-soft text-fog hover:text-parchment cursor-pointer"
+            className={`text-[12px] px-3 py-1 rounded-md border transition-colors cursor-pointer ${
+              filter === "in-progress"
+                ? "border-amber text-amber bg-amber/10"
+                : "border-border-soft text-fog hover:text-parchment"
             }`}
           >
             {t("filterInProgress")}
           </button>
           <button
             onClick={() => setFilter("complete")}
-            disabled={!hasChapters}
-            className={`text-[12px] px-3 py-1 rounded-md border transition-colors ${
-              !hasChapters
-                ? "border-border-soft text-fog/40 cursor-not-allowed"
-                : filter === "complete"
-                  ? "border-amber text-amber bg-amber/10 cursor-pointer"
-                  : "border-border-soft text-fog hover:text-parchment cursor-pointer"
+            className={`text-[12px] px-3 py-1 rounded-md border transition-colors cursor-pointer ${
+              filter === "complete"
+                ? "border-amber text-amber bg-amber/10"
+                : "border-border-soft text-fog hover:text-parchment"
             }`}
           >
             {t("filterComplete")}
@@ -133,10 +128,13 @@ export function BookGrid({ books }: BookGridProps) {
           ))}
         </div>
       ) : (
-        <div className="border border-border-soft rounded-xl overflow-hidden">
-          {sortedBooks.map((book) => (
-            <ShelfRow key={book.id} book={book} />
-          ))}
+        <div className="flex flex-col gap-3">
+          <div className="border border-border-soft rounded-xl overflow-hidden">
+            {sortedBooks.map((book) => (
+              <ShelfRow key={book.id} book={book} />
+            ))}
+          </div>
+          <CreateBookModal variant="row" />
         </div>
       )}
     </div>
