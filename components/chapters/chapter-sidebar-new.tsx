@@ -21,13 +21,7 @@ function StatusDot({ status }: { status: Chapter["status"] }) {
   );
 }
 
-function ChapterRow({
-  chapter,
-  bookId,
-}: {
-  chapter: Chapter;
-  bookId: string;
-}) {
+function ChapterRow({ chapter, bookId }: { chapter: Chapter; bookId: string }) {
   const path = usePathname();
   const href = `/books/${bookId}/chapters/${chapter.id}`;
   const isActive = path === href;

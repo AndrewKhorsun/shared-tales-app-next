@@ -7,7 +7,7 @@ import { api } from "@/lib/api";
 import { Book } from "@/types";
 import { Modal } from "@/components/ui/modal";
 
-export function CreateBookModal() {
+export function CreateBookModal({ variant = "card" }: { variant?: "card" | "row" }) {
   const t = useTranslations("CreateBookModal");
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -45,9 +45,13 @@ export function CreateBookModal() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-surface hover:bg-elevated transition-colors text-fog hover:text-parchment border border-dashed border-fog/20 hover:border-fog/40 min-h-[120px] cursor-pointer"
+        className={
+          variant === "row"
+            ? "flex items-center gap-2 px-4 py-3 w-full text-left text-fog hover:text-parchment hover:bg-surface transition-colors border border-dashed border-fog/20 hover:border-fog/40 rounded-xl cursor-pointer"
+            : "flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-surface hover:bg-elevated transition-colors text-fog hover:text-parchment border border-dashed border-fog/20 hover:border-fog/40 min-h-30 cursor-pointer"
+        }
       >
-        <span className="text-2xl leading-none">+</span>
+        <span className="text-xl leading-none">+</span>
         <span className="text-sm font-light">{t("triggerLabel")}</span>
       </button>
 
