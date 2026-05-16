@@ -31,8 +31,11 @@ const crimsonPro = Crimson_Pro({
 });
 
 export const metadata: Metadata = {
-  title: "Book Architect",
+  title: "Shared Tales",
   description: "Write your book the way it deserves to be written",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export function generateStaticParams() {

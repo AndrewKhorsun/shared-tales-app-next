@@ -4,6 +4,7 @@ export interface User {
   first_name: string;
   last_name: string;
   email_verified: boolean;
+  onboarding_completed_at: string | null;
 }
 
 export interface LoginRequest {
