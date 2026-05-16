@@ -5,6 +5,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { User } from "@/types/auth";
 import { ProfileDropdown } from "./profile-dropdown";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
+import { BookOpen } from "lucide-react";
 
 export function TopNav({ user }: { user: User }) {
   const t = useTranslations("TopNav");
@@ -48,6 +49,17 @@ export function TopNav({ user }: { user: User }) {
         <div className="w-px h-5 bg-border-soft mx-1" />
 
         <LocaleSwitcher />
+
+        <div className="w-px h-5 bg-border-soft mx-1" />
+
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent("open-onboarding"))}
+          className="flex items-center gap-1.5 text-fog hover:text-parchment transition-colors text-xs px-2.5 py-1 rounded-md border border-border-soft hover:border-border-mid hover:bg-surface cursor-pointer"
+          title="Guide"
+        >
+          <BookOpen size={14} />
+          Guide
+        </button>
 
         <div className="w-px h-5 bg-border-soft mx-1" />
 
