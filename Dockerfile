@@ -2,7 +2,7 @@ FROM node:22-alpine
 RUN npm install -g pnpm@9
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
-RUN HUSKY=0 pnpm install --frozen-lockfile --config.unsafe-perm=true
+RUN pnpm install --frozen-lockfile
 COPY . .
 ARG NEXT_PUBLIC_SOCKET_URL
 ENV NEXT_PUBLIC_SOCKET_URL=$NEXT_PUBLIC_SOCKET_URL
