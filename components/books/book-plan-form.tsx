@@ -110,6 +110,7 @@ export function BookPlanForm({ bookId, bookTitle, existingPlan }: BookPlanFormPr
           target_audience: existingPlan.target_audience,
           writing_style: existingPlan.writing_style,
           language: existingPlan.language,
+          total_chapters: existingPlan.total_chapters,
           generation_settings: existingPlan.generation_settings,
         }
       : undefined,
@@ -236,6 +237,20 @@ export function BookPlanForm({ bookId, bookTitle, existingPlan }: BookPlanFormPr
                   {errors.language && <p className="text-xs text-rust">{errors.language.message}</p>}
                 </Field>
               </div>
+
+              <Field label={t("fields.totalChapters")} tooltip={t("fields.totalChaptersTooltip")}>
+                <input
+                  {...register("total_chapters", { valueAsNumber: true })}
+                  type="number"
+                  min={1}
+                  max={100}
+                  placeholder={t("fields.totalChaptersPlaceholder")}
+                  className={`${inputClass} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                />
+                {errors.total_chapters && (
+                  <p className="text-xs text-rust">{errors.total_chapters.message}</p>
+                )}
+              </Field>
 
               <Field label={t("fields.targetAudience")} tooltip={t("fields.targetAudienceTooltip")}>
                 <input
@@ -391,7 +406,7 @@ export function BookPlanForm({ bookId, bookTitle, existingPlan }: BookPlanFormPr
               {chapterFields.length === 0 ? (
                 <p className="text-sm text-fog/50 italic">{t("chapterSummaries.empty")}</p>
               ) : (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 max-h-[420px] overflow-y-auto pr-2 scrollbar-thin">
                   {chapterFields.map((field, index) => (
                     <div key={field.id} className="grid gap-3 items-center" style={{ gridTemplateColumns: "60px 1fr" }}>
                       <span className="font-mono text-[11px] text-fog/67 text-center tracking-[.06em]">
@@ -414,7 +429,12 @@ export function BookPlanForm({ bookId, bookTitle, existingPlan }: BookPlanFormPr
               )}
             </SectionBlock>
 
-            {saveError && <p className="text-xs text-rust">{saveError}</p>}
+            {saveError && (
+              <div className="flex items-start gap-2.5 px-4 py-3 rounded-[8px] bg-rust/10 border border-rust/30 text-sm text-rust">
+                <span className="shrink-0 mt-0.5">⚠</span>
+                <span>{saveError}</span>
+              </div>
+            )}
 
             <div className="flex gap-3 justify-end py-5 border-t border-border-soft">
               <button
