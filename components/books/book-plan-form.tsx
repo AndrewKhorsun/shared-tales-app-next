@@ -245,7 +245,7 @@ export function BookPlanForm({ bookId, bookTitle, existingPlan }: BookPlanFormPr
                   min={1}
                   max={100}
                   placeholder={t("fields.totalChaptersPlaceholder")}
-                  className={inputClass}
+                  className={`${inputClass} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                 />
                 {errors.total_chapters && (
                   <p className="text-xs text-rust">{errors.total_chapters.message}</p>
@@ -406,7 +406,7 @@ export function BookPlanForm({ bookId, bookTitle, existingPlan }: BookPlanFormPr
               {chapterFields.length === 0 ? (
                 <p className="text-sm text-fog/50 italic">{t("chapterSummaries.empty")}</p>
               ) : (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 max-h-[420px] overflow-y-auto pr-2 scrollbar-thin">
                   {chapterFields.map((field, index) => (
                     <div key={field.id} className="grid gap-3 items-center" style={{ gridTemplateColumns: "60px 1fr" }}>
                       <span className="font-mono text-[11px] text-fog/67 text-center tracking-[.06em]">
