@@ -429,7 +429,12 @@ export function BookPlanForm({ bookId, bookTitle, existingPlan }: BookPlanFormPr
               )}
             </SectionBlock>
 
-            {saveError && <p className="text-xs text-rust">{saveError}</p>}
+            {saveError && (
+              <div className="flex items-start gap-2.5 px-4 py-3 rounded-[8px] bg-rust/10 border border-rust/30 text-sm text-rust">
+                <span className="shrink-0 mt-0.5">⚠</span>
+                <span>{saveError}</span>
+              </div>
+            )}
 
             <div className="flex gap-3 justify-end py-5 border-t border-border-soft">
               <button
