@@ -110,6 +110,7 @@ export function BookPlanForm({ bookId, bookTitle, existingPlan }: BookPlanFormPr
           target_audience: existingPlan.target_audience,
           writing_style: existingPlan.writing_style,
           language: existingPlan.language,
+          total_chapters: existingPlan.total_chapters,
           generation_settings: existingPlan.generation_settings,
         }
       : undefined,
@@ -236,6 +237,20 @@ export function BookPlanForm({ bookId, bookTitle, existingPlan }: BookPlanFormPr
                   {errors.language && <p className="text-xs text-rust">{errors.language.message}</p>}
                 </Field>
               </div>
+
+              <Field label={t("fields.totalChapters")} tooltip={t("fields.totalChaptersTooltip")}>
+                <input
+                  {...register("total_chapters", { valueAsNumber: true })}
+                  type="number"
+                  min={1}
+                  max={100}
+                  placeholder={t("fields.totalChaptersPlaceholder")}
+                  className={inputClass}
+                />
+                {errors.total_chapters && (
+                  <p className="text-xs text-rust">{errors.total_chapters.message}</p>
+                )}
+              </Field>
 
               <Field label={t("fields.targetAudience")} tooltip={t("fields.targetAudienceTooltip")}>
                 <input

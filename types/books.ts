@@ -31,6 +31,7 @@ export interface BookPlan {
   target_audience: string;
   writing_style: string;
   language: BookLanguage;
+  total_chapters?: number;
   generation_settings: {
     characters: Array<{
       name: string;
