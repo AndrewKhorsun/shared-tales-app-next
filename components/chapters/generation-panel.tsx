@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import { getSocket } from "@/lib/socket";
 import { useEffect, useReducer, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { TriangleAlert } from "lucide-react";
 
 type State =
   | { status: "idle" }
@@ -12,7 +13,8 @@ type State =
   | { status: "plan_review"; plan: string }
   | { status: "generating" }
   | { status: "done"; content: string }
-  | { status: "error"; message: string };
+  | { status: "error_planner"; message: string }
+  | { status: "error_writer"; message: string; plan: string | null };
 
 type Action =
   | { type: "GENERATE" }
@@ -20,7 +22,7 @@ type Action =
   | { type: "APPROVE" }
   | { type: "REVISE" }
   | { type: "DONE"; content: string }
-  | { type: "ERROR"; message: string }
+  | { type: "ERROR"; stage: string; message: string; plan?: string | null }
   | { type: "RESET" };
 
 function reducer(state: State, action: Action): State {
@@ -36,7 +38,10 @@ function reducer(state: State, action: Action): State {
     case "DONE":
       return { status: "done", content: action.content };
     case "ERROR":
-      return { status: "error", message: action.message };
+      if (action.stage === "writer" || action.stage === "editor") {
+        return { status: "error_writer", message: action.message, plan: action.plan ?? null };
+      }
+      return { status: "error_planner", message: action.message };
     case "RESET":
       return { status: "idle" };
     default:
@@ -116,7 +121,7 @@ export function GenerationPanel({
     });
 
     socket.on("chapter:error", (data) => {
-      dispatch({ type: "ERROR", message: data.message });
+      dispatch({ type: "ERROR", stage: data.stage ?? "planner", message: data.message, plan: data.plan });
     });
 
     return () => {
@@ -220,15 +225,69 @@ export function GenerationPanel({
         </div>
       )}
 
-      {state.status === "error" && (
+      {state.status === "error_planner" && (
         <div className="flex flex-col gap-3">
-          <p className="text-red-400 text-sm">{state.message}</p>
+          <div className="flex items-start gap-2.5 px-4 py-3 rounded-lg bg-rust/10 border border-rust/30 text-sm text-rust">
+            <TriangleAlert size={15} className="shrink-0 mt-0.5" />
+            <span>{state.message}</span>
+          </div>
           <button
             onClick={() => dispatch({ type: "RESET" })}
             className="self-start px-4 py-2 rounded-lg text-sm text-fog hover:text-parchment border border-border-soft hover:border-fog/40 transition-colors cursor-pointer"
           >
             {t("tryAgain")}
           </button>
+        </div>
+      )}
+
+      {state.status === "error_writer" && (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-start gap-2.5 px-4 py-3 rounded-lg bg-rust/10 border border-rust/30 text-sm text-rust">
+            <TriangleAlert size={15} className="shrink-0 mt-0.5" />
+            <span>{state.message}</span>
+          </div>
+          {state.plan && (
+            <div className="flex flex-col gap-3">
+              <p className="text-xs text-fog font-light uppercase tracking-wider">
+                {t("chapterPlan")}
+              </p>
+              <div className="plan-prose prose prose-sm max-w-none">
+                <ReactMarkdown>{state.plan}</ReactMarkdown>
+              </div>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={handleApprove}
+                  className="self-start px-4 py-2 rounded-lg text-sm bg-amber-dim text-parchment hover:bg-amber transition-colors cursor-pointer"
+                >
+                  {t("approve")}
+                </button>
+                <div className="flex flex-col gap-1.5">
+                  <textarea
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                    placeholder={t("revisePlaceholder")}
+                    rows={2}
+                    className="bg-elevated rounded-lg px-3 py-2 text-sm text-parchment placeholder:text-fog/40 outline-none focus:ring-1 focus:ring-fog/30 transition resize-none"
+                  />
+                  <button
+                    onClick={handleRevise}
+                    disabled={!feedback.trim()}
+                    className="self-start px-4 py-2 rounded-lg text-sm text-fog hover:text-parchment border border-border-soft hover:border-fog/40 transition-colors disabled:opacity-40 cursor-pointer"
+                  >
+                    {t("revisePlan")}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {!state.plan && (
+            <button
+              onClick={() => dispatch({ type: "RESET" })}
+              className="self-start px-4 py-2 rounded-lg text-sm text-fog hover:text-parchment border border-border-soft hover:border-fog/40 transition-colors cursor-pointer"
+            >
+              {t("tryAgain")}
+            </button>
+          )}
         </div>
       )}
     </div>
