@@ -3,6 +3,7 @@ import { Book, BookPlan } from "@/types";
 import { ChaptersResponse } from "@/types/chapters";
 import { notFound } from "next/navigation";
 import { BookOverview } from "@/components/books/book-overview";
+import { createBookPlanSchema } from "@/lib/validations/book-plan.schema";
 
 interface BookPageProps {
   params: Promise<{ bookId: string }>;
@@ -28,11 +29,14 @@ export default async function BookPage({ params }: BookPageProps) {
   const chapters = chaptersResponse?.chapters || [];
   const plan = (planResponse?.data as any)?.bookPlan || planResponse?.data || null;
 
+  const planIsComplete = plan !== null && createBookPlanSchema.safeParse(plan).success;
+
   return (
     <BookOverview
       book={book}
       chapters={chapters}
       plan={plan}
+      planIsComplete={planIsComplete}
     />
   );
 }

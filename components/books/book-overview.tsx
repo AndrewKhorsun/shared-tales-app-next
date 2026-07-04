@@ -14,6 +14,7 @@ interface BookOverviewProps {
   book: Book;
   chapters: Chapter[];
   plan: BookPlan | null;
+  planIsComplete: boolean;
 }
 
 function wordCount(content: string): number {
@@ -35,13 +36,27 @@ function formatDate(dateString: string): string {
   });
 }
 
-export function BookOverview({ book, chapters, plan }: BookOverviewProps) {
+export function BookOverview({ book, chapters, plan, planIsComplete }: BookOverviewProps) {
   const router = useRouter();
   const locale = useLocale();
   const [coverUrl, setCoverUrl] = useState<string | null>(
     book.cover_image_url ?? null,
   );
   const [exporting, setExporting] = useState(false);
+  const [planToast, setPlanToast] = useState<{ key: number } | null>(null);
+
+  function handleContinueWriting() {
+    if (!planIsComplete) {
+      const key = Date.now();
+      setPlanToast({ key });
+      setTimeout(
+        () => setPlanToast((prev) => (prev?.key === key ? null : prev)),
+        3500,
+      );
+      return;
+    }
+    router.push(`/${locale}/books/${book.id}/chapters`);
+  }
 
   async function handleExport(format: "docx" | "pdf" | "epub") {
     setExporting(true);
@@ -77,6 +92,14 @@ export function BookOverview({ book, chapters, plan }: BookOverviewProps) {
 
   return (
     <div className="bg-page">
+      {planToast && (
+        <div
+          key={planToast.key}
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-rust text-parchment font-mono text-[11px] px-4 py-2 rounded shadow-lg whitespace-nowrap z-50 animate-fade-in"
+        >
+          Fill in the required book plan fields before writing
+        </div>
+      )}
       <div className="max-w-5xl mx-auto px-6 py-8">
         {/* Back link */}
         <Link
@@ -111,10 +134,12 @@ export function BookOverview({ book, chapters, plan }: BookOverviewProps) {
 
             <div className="flex gap-3">
               <button
-                onClick={() =>
-                  router.push(`/${locale}/books/${book.id}/chapters`)
-                }
-                className="bg-amber text-canvas font-mono text-[11px] px-4 py-2 rounded hover:bg-amber/90 transition-colors"
+                onClick={handleContinueWriting}
+                className={`font-mono text-[11px] px-4 py-2 rounded transition-colors ${
+                  planIsComplete
+                    ? "bg-amber text-canvas hover:bg-amber/90"
+                    : "bg-amber/40 text-canvas/70 cursor-not-allowed"
+                }`}
               >
                 Continue writing →
               </button>

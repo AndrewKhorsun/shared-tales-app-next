@@ -102,7 +102,7 @@ export function BookPlanForm({ bookId, bookTitle, existingPlan }: BookPlanFormPr
     control,
     reset,
     formState: { errors, isDirty },
-  } = useForm<CreateBookPlanDto>({
+  } = useForm<z.input<typeof createBookPlanSchema>, unknown, CreateBookPlanDto>({
     resolver: zodResolver(createBookPlanSchema),
     defaultValues: existingPlan
       ? {
@@ -240,10 +240,12 @@ export function BookPlanForm({ bookId, bookTitle, existingPlan }: BookPlanFormPr
 
               <Field label={t("fields.totalChapters")} tooltip={t("fields.totalChaptersTooltip")}>
                 <input
-                  {...register("total_chapters", { valueAsNumber: true })}
+                  {...register("total_chapters", {
+                    setValueAs: (v) => (v === "" || v === null || v === undefined ? undefined : Number(v)),
+                  })}
                   type="number"
                   min={1}
-                  max={100}
+                  max={50}
                   placeholder={t("fields.totalChaptersPlaceholder")}
                   className={`${inputClass} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                 />
